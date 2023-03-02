@@ -44,14 +44,9 @@ class ChatGPT:
         while answer is None:
             prompt = self._generate_prompt(message, dialog_messages, chat_mode)
             try:
-                r = openai.Completion.create(
+                r = openai.ChatCompletion.create(
                     model="gpt-3.5-turbo",
-                    # engine="text-davinci-003",
                     messages=prompt,
-                    temperature=0.7,
-                    top_p=1,
-                    frequency_penalty=0,
-                    presence_penalty=0,
                 )
                 answer = r.choices[0].text
                 answer = self._postprocess_answer(answer)
