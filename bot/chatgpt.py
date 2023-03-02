@@ -45,10 +45,10 @@ class ChatGPT:
             prompt = self._generate_prompt(message, dialog_messages, chat_mode)
             try:
                 r = openai.Completion.create(
-                    engine="text-davinci-003",
-                    prompt=prompt,
+                    model="gpt-3.5-turbo",
+                    # engine="text-davinci-003",
+                    messages=prompt,
                     temperature=0.7,
-                    max_tokens=1000,
                     top_p=1,
                     frequency_penalty=0,
                     presence_penalty=0,
@@ -70,21 +70,19 @@ class ChatGPT:
         return answer, prompt, n_used_tokens, n_first_dialog_messages_removed
 
     def _generate_prompt(self, message, dialog_messages, chat_mode):
-        prompt = CHAT_MODES[chat_mode]["prompt_start"]
-        prompt += "\n\n"
-
+        messages=[]
+        first= {"role": "system", "content": CHAT_MODES[chat_mode]["prompt_start"]}
+        messages.append(first)
         # add chat context
         if len(dialog_messages) > 0:
-            prompt += "Chat:\n"
             for dialog_message in dialog_messages:
-                prompt += f"User: {dialog_message['user']}\n"
-                prompt += f"ChatGPT: {dialog_message['bot']}\n"
+                messages.append( {"role": "user", "content": dialog_message['user']})
+                messages.append( {"role": "assistant", "content": dialog_message['bot']})
 
         # current message
-        prompt += f"User: {message}\n"
-        prompt += "ChatGPT: "
+        messages.append( {"role": "user", "content": message})
 
-        return prompt
+        return messages
 
     def _postprocess_answer(self, answer):
         answer = answer.strip()
