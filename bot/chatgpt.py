@@ -45,10 +45,10 @@ class ChatGPT:
             prompt = self._generate_prompt(message, dialog_messages, chat_mode)
             try:
                 r = openai.ChatCompletion.create(
-                    model="gpt-3.5-turbo",
+                    model="gpt-3.5-turbo-0301",
                     messages=prompt,
                 )
-                answer = r.choices[0].text
+                answer = r.choices[0]["message"]["content"]
                 answer = self._postprocess_answer(answer)
 
                 n_used_tokens = r.usage.total_tokens
